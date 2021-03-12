@@ -1,0 +1,157 @@
+//
+// Created by Kirill on 3/12/2021.
+//
+
+#include <cstring>
+#include <iostream>
+#include "TextNode.h"
+
+TTextNode *TTextNode::get_next() const {
+    return next;
+}
+
+void TTextNode::set_next(TTextNode *next) {
+    TTextNode::next = next;
+}
+
+TTextNode *TTextNode::get_down() const {
+    return down;
+}
+
+void TTextNode::set_down(TTextNode *down) {
+    TTextNode::down = down;
+}
+
+char TTextNode::get_c() const {
+    return c;
+}
+
+void TTextNode::set_c(char c) {
+    TTextNode::c = c;
+}
+
+NodeLevel TTextNode::get_level() const {
+    return level;
+}
+
+void TTextNode::set_level(NodeLevel level) {
+    TTextNode::level = level;
+}
+
+TTextNode::TTextNode(char _c) {
+    this->next = nullptr;
+    this->down = nullptr;
+    this->c = _c;
+    this->level = NodeLevel::LETTER;
+}
+
+TTextNode::TTextNode(NodeLevel _level, char *_s) {
+
+}
+
+TTextNode *TTextNode::parse(char *s, NodeLevel level, int start, int end) {
+    if(level== NodeLevel::LETTER){
+        return new TTextNode(s[start]);
+    }
+    char separator = '\0';
+    bool no_separator = level == NodeLevel::WORD;
+    if (end == 0) {
+        end = strlen(s);
+    }
+    // separators by node level
+    switch (level){
+        case NodeLevel::TEXT:{
+            separator = '\n';
+            break;
+        }
+        case NodeLevel::STRING:{
+            separator = ' ';
+        }
+    }
+    int local_start = start;
+    TTextNode *root = nullptr;
+    TTextNode *current = nullptr;
+    TTextNode *next = nullptr;
+    std::cout<<start<<" "<<end<<std::endl;
+    for (int i = start; i <= end; ++i) {
+        if (no_separator  || s[i] == separator || i == end) {
+            if (root == nullptr) {
+                root = TTextNode::parse(s, static_cast<NodeLevel>(static_cast<int>(level) - 1), local_start, i);
+                current = root;
+            } else {
+                next = TTextNode::parse(s, static_cast<NodeLevel>(static_cast<int>(level) - 1), local_start, i);
+                current->set_next(next);
+                current = next;
+            }
+            local_start = i + 1;
+        }
+    }
+    TTextNode* wrapper = new TTextNode(0);
+    wrapper->set_level(level);
+    wrapper->set_down(root);
+    return wrapper;
+}
+
+std::ostream &operator<<(std::ostream &ostream, const TTextNode &node) {
+    TTextNode* current = new TTextNode(node);
+    std::string type;
+
+    TStack<TTextNode*>stack(20);
+    bool end_of_print = false;
+    while(!end_of_print){
+        switch (current->get_level()){
+            case NodeLevel::LETTER:
+                type = "letter ";
+                break;
+            case NodeLevel::WORD:
+                type = "word ";
+                break;
+            case NodeLevel::STRING:
+                type = "string ";
+                break;
+            case NodeLevel::TEXT:
+                type = "text ";
+                break;
+        }
+        ostream<<type;
+        while(!current->is_letter()){
+            stack.push(current);
+            current = current->get_down();
+        }
+        // letter
+        while(current != nullptr){
+            ostream<<current->get_c();
+            current= current->get_next();
+        }
+        ostream<<"\n";
+        while(true){
+            if(!stack.is_empty()){
+                current = stack.pop()->get_next();
+                if(current != nullptr){
+                    // есть следующий обьект, обрабатываем его
+                    break;
+                }else if(current == nullptr && !stack.is_empty()){
+                    // дошли до последнего слова(строки) и надо подниматься еще выше
+                    continue;
+                }else{
+                    end_of_print = true;
+                }
+            }else{
+                end_of_print = true;
+                break;
+            }
+        }
+    }
+    return ostream;
+}
+
+bool TTextNode::is_letter() const {
+    return this->level == NodeLevel::LETTER;
+}
+
+TTextNode::TTextNode(const TTextNode &node) {
+    next = node.get_next();
+    down = node.get_down();
+    c = node.c;
+    level = node.level;
+}
