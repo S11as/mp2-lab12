@@ -18,7 +18,7 @@ public:
     int front = -1;
     bool data_belongs_to_stack = true;
 public:
-    TStack(int size=1, bool data=true);
+    TStack(int size=20, bool data=true);
 
     TStack(const TStack<T> &stack);
 
@@ -92,7 +92,7 @@ TStack<T> &TStack<T>::operator=(const TStack<T> &stack) {
     if(this->data_belongs_to_stack){
         delete[] this->arr;
         this->arr = new T *[stack.size];
-        for (int i = 0; i < this->size; ++i) {
+        for (int i = 0; i < this->front+1; ++i) {
             this->arr[i] = new T(*stack.arr[i]);
         }
     }else{

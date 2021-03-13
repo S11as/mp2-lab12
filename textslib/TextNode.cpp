@@ -45,58 +45,13 @@ TTextNode::TTextNode(char _c) {
     this->level = NodeLevel::LETTER;
 }
 
-TTextNode::TTextNode(NodeLevel _level, char *_s) {
-
-}
-
-TTextNode *TTextNode::parse(char *s, NodeLevel level, int start, int end) {
-    if(level== NodeLevel::LETTER){
-        return new TTextNode(s[start]);
-    }
-    char separator = '\0';
-    bool no_separator = level == NodeLevel::WORD;
-    if (end == 0) {
-        end = strlen(s);
-    }
-    // separators by node level
-    switch (level){
-        case NodeLevel::TEXT:{
-            separator = '\n';
-            break;
-        }
-        case NodeLevel::STRING:{
-            separator = ' ';
-        }
-    }
-    int local_start = start;
-    TTextNode *root = nullptr;
-    TTextNode *current = nullptr;
-    TTextNode *next = nullptr;
-    std::cout<<start<<" "<<end<<std::endl;
-    for (int i = start; i <= end; ++i) {
-        if (no_separator  || s[i] == separator || i == end) {
-            if (root == nullptr) {
-                root = TTextNode::parse(s, static_cast<NodeLevel>(static_cast<int>(level) - 1), local_start, i);
-                current = root;
-            } else {
-                next = TTextNode::parse(s, static_cast<NodeLevel>(static_cast<int>(level) - 1), local_start, i);
-                current->set_next(next);
-                current = next;
-            }
-            local_start = i + 1;
-        }
-    }
-    TTextNode* wrapper = new TTextNode(0);
-    wrapper->set_level(level);
-    wrapper->set_down(root);
-    return wrapper;
-}
+TTextNode::TTextNode(NodeLevel _level, char *_s) {}
 
 std::ostream &operator<<(std::ostream &ostream, const TTextNode &node) {
     TTextNode* current = new TTextNode(node);
     std::string type;
 
-    TStack<TTextNode*>stack(20);
+    TStack<TTextNode*>stack{};
     bool end_of_print = false;
     while(!end_of_print){
         switch (current->get_level()){
@@ -135,6 +90,7 @@ std::ostream &operator<<(std::ostream &ostream, const TTextNode &node) {
                     continue;
                 }else{
                     end_of_print = true;
+                    break;
                 }
             }else{
                 end_of_print = true;
@@ -154,4 +110,8 @@ TTextNode::TTextNode(const TTextNode &node) {
     down = node.get_down();
     c = node.c;
     level = node.level;
+}
+
+bool TTextNode::has_next() const {
+    return this->next != nullptr;
 }

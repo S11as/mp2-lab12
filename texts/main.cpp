@@ -1,10 +1,15 @@
 #include <iostream>
+#include <Text.h>
 #include "TextNode.h"
+#include "TTextFactory.h"
 int main()
 {
     char* s = "hello word www dddd ddd\nbye bye";
-    TTextNode* node = TTextNode::parse(s, NodeLevel::TEXT);
-    std::cout<< static_cast<int>(node->get_level())<<std::endl;
-    std::cout<<*node<<std::endl;
+    TText* node = TTextFactory::create(s);
+    TText::iterator i = node->begin();
+    while(i.get()){
+        i.go_next();
+    }
+
     return 0;
 }
