@@ -9,6 +9,12 @@ TTextIterator::TTextIterator(TTextNode *_node) {
     this->node = _node;
 }
 
+
+TTextIterator::TTextIterator(const TTextIterator &_iter) {
+    this->node = _iter.node;
+    this->stack = _iter.stack;
+}
+
 TTextIterator &TTextIterator::go_next() {
     if(this->node->is_letter() && this->node->has_next()){
         this->node = this->node->get_next();
@@ -35,12 +41,48 @@ TTextIterator &TTextIterator::go_next() {
     return *this;
 }
 
-TTextNode *TTextIterator::get() {
-    return this->node;
+TTextIterator &TTextIterator::go_next(NodeLevel level) {
+    this->go_next();
+    while(this->node != nullptr){
+        if(this->node->get_level() == level)
+            break;
+        this->go_next();
+    }
+    return *this;
 }
 
 TTextIterator &TTextIterator::go_next_char() {
-    if(this->node->is_letter()){
+    return this->go_next(NodeLevel::LETTER);
+}
 
+TTextIterator &TTextIterator::reset_to(NodeLevel level) {
+    if(this->node!= nullptr){
+        int current_lvl = static_cast<int>(this->node->get_level());
+        int needed_lvl = static_cast<int>(level);
+        if(current_lvl < needed_lvl){
+            while(current_lvl<needed_lvl){
+                this->node = this->stack.pop();
+                current_lvl++;
+            }
+        }else if(current_lvl > needed_lvl){
+            while(current_lvl>needed_lvl){
+                this->stack.push(this->node);
+                this->node = this->node->get_down();
+                current_lvl--;
+            }
+        }
     }
+    return *this;
+}
+
+TTextIterator &TTextIterator::reset() {
+    while(!this->stack.is_empty()){
+        this->stack.pop();
+    }
+    this->node = nullptr;
+    return *this;
+}
+
+TTextNode *TTextIterator::get() {
+    return this->node;
 }

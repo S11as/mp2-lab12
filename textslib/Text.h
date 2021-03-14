@@ -16,6 +16,9 @@ public:
     TTextNode* get_root();
     typedef TTextIterator iterator;
     iterator begin();
+    iterator find(char c);
+    iterator find(char* s);
+    iterator find(NodeLevel level, char* s);
 };
 
 

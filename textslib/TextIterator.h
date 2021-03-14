@@ -13,10 +13,15 @@ protected:
     TTextNode* node;
     TStack<TTextNode*> stack = TStack<TTextNode *>();
 public:
-    TTextIterator(TTextNode* _node);
+    explicit TTextIterator(TTextNode* _node);
+    TTextIterator(const TTextIterator& _iter);
+
     TTextIterator& go_next();
+    TTextIterator& go_next(NodeLevel level);
     TTextIterator& go_next_char();
     TTextNode* get();
+    TTextIterator& reset_to(NodeLevel level);
+    TTextIterator& reset();
 };
 
 

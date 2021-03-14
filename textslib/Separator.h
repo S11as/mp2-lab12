@@ -14,7 +14,7 @@ protected:
     int len;
 public:
     explicit TSeparator(char*s= nullptr);
-    bool is(const char*str, int start, int end);
+    bool in_begin(const char*str, int start, int end);
     void set_s(char *s);
 };
 

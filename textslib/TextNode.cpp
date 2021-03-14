@@ -115,3 +115,40 @@ TTextNode::TTextNode(const TTextNode &node) {
 bool TTextNode::has_next() const {
     return this->next != nullptr;
 }
+
+bool TTextNode::operator==(char c) {
+    if(this->level != NodeLevel::LETTER)
+        return false;
+    else{
+        return this->c == c;
+    }
+}
+
+bool TTextNode::operator==(TTextNode& node) {
+    if(this->level != node.get_level())
+        return false;
+    if(this->level == NodeLevel::LETTER){
+        return this->c == node.get_c();
+    }
+    TTextNode* this_root = this->get_down();
+    TTextNode* outer_root = node.get_down();
+    if(*(outer_root) != *(this_root)){
+        return false;
+    }
+    while(this_root->has_next() && outer_root->has_next()){
+        this_root = this_root->get_next();
+        outer_root = outer_root->get_next();
+        if(*(outer_root) != *(this_root)){
+            return false;
+        }
+    }
+    if(this_root->has_next() || outer_root->has_next()){
+        // разной длины но одно полностью включено в другое
+        return false;
+    }
+    return true;
+}
+
+bool TTextNode::operator!=(TTextNode &node) {
+    return !this->operator==(node);
+}

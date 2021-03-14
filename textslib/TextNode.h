@@ -29,14 +29,16 @@ public:
     void set_level(NodeLevel level);
     bool is_letter() const;
     bool has_next() const;
+    bool contains(TTextNode* node);
 
     explicit TTextNode(char _c=0);
     TTextNode(NodeLevel _level=NodeLevel::LETTER, char* _s=0);
     TTextNode(const TTextNode &node);
-    TTextNode();
 
     ~TTextNode();
-
+    bool operator==(char c);
+    bool operator==(TTextNode& node);
+    bool operator!=(TTextNode& node);
     friend std::ostream &operator<<(std::ostream &ostream, const TTextNode &node);
 };
 

@@ -10,7 +10,7 @@ TSeparator::TSeparator(char *s) {
     this->len = strlen(s);
 }
 
-bool TSeparator::is(const char *str, int start, int end) {
+bool TSeparator::in_begin(const char *str, int start, int end) {
     for (int i = 0; i < this->len; ++i) {
         if(start+i>=end)
             return false;

@@ -6,10 +6,7 @@ int main()
 {
     char* s = "hello word www dddd ddd\nbye bye";
     TText* node = TTextFactory::create(s);
-    TText::iterator i = node->begin();
-    while(i.get()){
-        i.go_next();
-    }
-
+    TTextIterator i = node->find("word");
+    std::cout<<i.get()->get_c()<<std::endl;
     return 0;
 }

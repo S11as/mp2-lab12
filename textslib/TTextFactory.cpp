@@ -12,6 +12,10 @@ TTextNode *TTextFactory::create_node(char *s, NodeLevel level, int start, int en
     }
     TSeparator* separator = new TSeparator("\n");
     bool no_separator = level == NodeLevel::WORD;
+    if(no_separator){
+        // чтобы пробел последний не попал как буква
+        end--;
+    }
     if (end == 0) {
         end = strlen(s);
     }
@@ -31,7 +35,7 @@ TTextNode *TTextFactory::create_node(char *s, NodeLevel level, int start, int en
     TTextNode *next = nullptr;
     std::cout<<start<<" "<<end<<std::endl;
     for (int i = start; i <= end; ++i) {
-        if (no_separator  || separator->is(s,i,end) || i == end) {
+        if (no_separator  || separator->in_begin(s,i,end) || i == end) {
             if (root == nullptr) {
                 root = TTextFactory::create_node(s, static_cast<NodeLevel>(static_cast<int>(level) - 1), local_start, i);
                 current = root;
