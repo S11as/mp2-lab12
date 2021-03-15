@@ -8,7 +8,7 @@
 #include "Stack.h"
 #include "Separator.h"
 
-enum class NodeLevel {LETTER=0, WORD=1, STRING=2, TEXT=3};
+enum class NodeLevel {LETTER=0, WORD=1, STRING=2, PARAGRAPH=3, PAGE=4, TEXT=5};
 
 class TTextNode {
 protected:
@@ -29,13 +29,12 @@ public:
     void set_level(NodeLevel level);
     bool is_letter() const;
     bool has_next() const;
-    bool contains(TTextNode* node);
+    bool has_down() const;
 
     explicit TTextNode(char _c=0);
-    TTextNode(NodeLevel _level=NodeLevel::LETTER, char* _s=0);
     TTextNode(const TTextNode &node);
 
-    ~TTextNode();
+    ~TTextNode() = default;
     bool operator==(char c);
     bool operator==(TTextNode& node);
     bool operator!=(TTextNode& node);

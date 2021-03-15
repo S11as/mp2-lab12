@@ -9,8 +9,6 @@
 class TSeparator {
 protected:
     char*s;
-
-protected:
     int len;
 public:
     explicit TSeparator(char*s= nullptr);

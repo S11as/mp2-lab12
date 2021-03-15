@@ -45,32 +45,34 @@ TTextNode::TTextNode(char _c) {
     this->level = NodeLevel::LETTER;
 }
 
-TTextNode::TTextNode(NodeLevel _level, char *_s) {}
 
 std::ostream &operator<<(std::ostream &ostream, const TTextNode &node) {
     TTextNode* current = new TTextNode(node);
-    std::string type;
-
+    std::string separator;
     TStack<TTextNode*>stack{};
+    TStack<std::string> separators;
     bool end_of_print = false;
     while(!end_of_print){
-        switch (current->get_level()){
-            case NodeLevel::LETTER:
-                type = "letter ";
-                break;
-            case NodeLevel::WORD:
-                type = "word ";
-                break;
-            case NodeLevel::STRING:
-                type = "string ";
-                break;
-            case NodeLevel::TEXT:
-                type = "text ";
-                break;
-        }
-        ostream<<type;
         while(!current->is_letter()){
             stack.push(current);
+            switch (current->get_level()){
+                case NodeLevel::LETTER:
+                    separator = "";
+                    break;
+                case NodeLevel::WORD:
+                    separator = " ";
+                    break;
+                case NodeLevel::STRING:
+                    separator = "\n";
+                    break;
+                case NodeLevel::PARAGRAPH:
+                    separator = "\\pa";
+                    break;
+                case NodeLevel::PAGE:
+                    separator = "\\pb";
+                    break;
+            }
+            separators.push(separator);
             current = current->get_down();
         }
         // letter
@@ -78,11 +80,12 @@ std::ostream &operator<<(std::ostream &ostream, const TTextNode &node) {
             ostream<<current->get_c();
             current= current->get_next();
         }
-        ostream<<"\n";
         while(true){
             if(!stack.is_empty()){
                 current = stack.pop()->get_next();
+                std::string s = separators.pop();
                 if(current != nullptr){
+                    ostream<<s;
                     // есть следующий обьект, обрабатываем его
                     break;
                 }else if(current == nullptr && !stack.is_empty()){
@@ -151,4 +154,8 @@ bool TTextNode::operator==(TTextNode& node) {
 
 bool TTextNode::operator!=(TTextNode &node) {
     return !this->operator==(node);
+}
+
+bool TTextNode::has_down() const {
+    return this->down == nullptr;
 }

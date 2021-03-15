@@ -61,7 +61,11 @@ TTextIterator &TTextIterator::reset_to(NodeLevel level) {
         int needed_lvl = static_cast<int>(level);
         if(current_lvl < needed_lvl){
             while(current_lvl<needed_lvl){
-                this->node = this->stack.pop();
+                if(!this->stack.is_empty()){
+                    this->node = this->stack.pop();
+                }else{
+                    this->node = nullptr;
+                }
                 current_lvl++;
             }
         }else if(current_lvl > needed_lvl){
@@ -85,4 +89,31 @@ TTextIterator &TTextIterator::reset() {
 
 TTextNode *TTextIterator::get() {
     return this->node;
+}
+
+TTextIterator &TTextIterator::_delete(int count, TTextIterator i) {
+    TStack<TTextNode*> linking;
+    TTextIterator j = i;
+    if(i.get()->get_level() != NodeLevel::LETTER){
+
+    }else{
+        j.reset_to(NodeLevel::WORD);
+        // проверить не является ли i rootом
+        j.go_next();
+        if(&(*j.get())==&(*i.get())){
+            //prev нет
+        }else{
+            // prev есть
+            while(j.get()){
+                if(&(*j.get())==&(*i.get())){
+                    break;
+                }
+                j.go_next();
+            }
+            // j указывает на prev для i
+
+        }
+
+    }
+    return i;
 }
