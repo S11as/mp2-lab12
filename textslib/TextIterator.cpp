@@ -95,17 +95,18 @@ int TTextIterator::get_str_len(int count) {
     int len = 0;
     int counted = 0;
     TStack<TSeparator> separators;
-    while(this->node && counted<count){
-        while(!this->node->is_letter()){
-            separators.push(this->node->get_separator());
-            this->go_next();
+    auto* j = new TTextIterator(*this);
+    while(j->get() && counted<count){
+        while(!j->get()->is_letter()){
+            separators.push(j->get()->get_separator());
+            j->go_next();
         }
         while(!separators.is_empty()){
             TSeparator s = separators.pop();
             len += s.get_len();
         }
-        while(this->node && this->node->is_letter()){
-            this->go_next();
+        while(j->get() && j->get()->is_letter()){
+            j->go_next();
             counted++;
             len++;
         }

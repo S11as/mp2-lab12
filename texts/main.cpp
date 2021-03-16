@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Text.h>
+#include <cstring>
 #include "TextNode.h"
 #include "TTextFactory.h"
 
@@ -9,8 +10,12 @@ int main() {
     TTextIterator i = node->begin();
     node->_delete(5, i);
     std::cout << *(node)<<std::endl;
-    TTextIterator b = node->begin();
-    std::cout<<b.get_str_len(17)<<std::endl;
+    TTextIterator j = node->find(NodeLevel::WORD, "www");
+    char *ss = node->copy(12, j);
+    int len = strlen(ss);
+    for (int k = 0; k < len; ++k) {
+        std::cout<<ss[k];
+    }
 //    TTextIterator b = node->begin();
 //    b.reset_to(NodeLevel::PARAGRAPH);
 //    while(b.get()){

@@ -241,18 +241,38 @@ std::ostream &operator<<(std::ostream &ostream, const TText &text) {
 char *TText::copy(int count, TTextIterator i) {
     char* result = new char[i.get_str_len(count)];
     int copied = 0;
+    int index = 0;
     TStack<TTextNode*> stack;
     TStack<TSeparator> separators;
     TTextNode* current = i.get();
-    while(!i.get() && copied < count){
+    // тк i может указывать на произвольный уровень нужно все уровни над ним положить в стек
+    // мы можем подниматься только наверх, а в стеке сверху лежит наименьший уровень
+    // поэтому используем очередь чтобы потом правильно заполнить текст
+    TQueue<TTextNode*> queue;
+    TTextIterator j = i;
+    NodeLevel level = j.get()->get_level();
+    level = static_cast<NodeLevel>(static_cast<int>(level)+1);
+    while(level!=NodeLevel::TEXT){
+        j.reset_to(level);
+        queue.push(j.get());
+        level = static_cast<NodeLevel>(static_cast<int>(level)+1);
+    }
+    while(!queue.is_empty()){
+        TTextNode* node = queue.pop();
+        stack.push(node);
+        separators.push(node->get_separator());
+    }
+
+    while(current && (copied < count)){
         while(!current->is_letter()){
             stack.push(current);
             separators.push(current->get_separator());
             current = current->get_down();
         }
-        while(current != nullptr){
-            result[copied] = current->get_c();
+        while((current != nullptr) && (copied < count)){
+            result[index] = current->get_c();
             copied++;
+            index++;
             current= current->get_next();
         }
         while(true){
@@ -261,8 +281,8 @@ char *TText::copy(int count, TTextIterator i) {
                 TSeparator s = separators.pop();
                 if(current != nullptr){
                     for (int j = 0; j < s.get_len(); ++j) {
-                        result[copied] = s.get_s()[j];
-                        copied++;
+                        result[index] = s.get_s()[j];
+                        index++;
                     }
                     // есть следующий обьект, обрабатываем его
                     break;
@@ -277,5 +297,6 @@ char *TText::copy(int count, TTextIterator i) {
             }
         }
     }
+    result[index] = '\0';
     return result;
 }

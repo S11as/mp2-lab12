@@ -7,6 +7,8 @@
 
 #include "TextNode.h"
 #include "TextIterator.h"
+#include "Queue.h"
+
 class TText {
 public:
     TTextNode* root = nullptr;
