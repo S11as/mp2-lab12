@@ -6,6 +6,8 @@
 #define TEXTSLIB_SEPARATOR_H
 
 
+#include <ostream>
+
 class TSeparator {
 protected:
     char*s;
@@ -14,6 +16,9 @@ public:
     explicit TSeparator(char*s= nullptr);
     bool in_begin(const char*str, int start, int end);
     void set_s(char *s);
+    char* get_s();
+    int get_len();
+    friend std::ostream &operator<<(std::ostream &ostream, const TSeparator &separator);
 };
 
 

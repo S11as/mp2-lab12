@@ -7,7 +7,11 @@
 
 TSeparator::TSeparator(char *s) {
     this->s = s;
-    this->len = strlen(s);
+    if(!s){
+        this->len = 0;
+    }else{
+        this->len = strlen(s);
+    }
 }
 
 bool TSeparator::in_begin(const char *str, int start, int end) {
@@ -23,4 +27,19 @@ bool TSeparator::in_begin(const char *str, int start, int end) {
 void TSeparator::set_s(char *s) {
     TSeparator::len=strlen(s);
     TSeparator::s = s;
+}
+
+std::ostream &operator<<(std::ostream &ostream, const TSeparator &separator) {
+    for (int i = 0; i < separator.len; ++i) {
+        ostream<<separator.s[i];
+    }
+    return ostream;
+}
+
+int TSeparator::get_len() {
+    return this->len;
+}
+
+char *TSeparator::get_s() {
+    return this->s;
 }

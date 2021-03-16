@@ -239,6 +239,43 @@ std::ostream &operator<<(std::ostream &ostream, const TText &text) {
 }
 
 char *TText::copy(int count, TTextIterator i) {
-
-    return nullptr;
+    char* result = new char[i.get_str_len(count)];
+    int copied = 0;
+    TStack<TTextNode*> stack;
+    TStack<TSeparator> separators;
+    TTextNode* current = i.get();
+    while(!i.get() && copied < count){
+        while(!current->is_letter()){
+            stack.push(current);
+            separators.push(current->get_separator());
+            current = current->get_down();
+        }
+        while(current != nullptr){
+            result[copied] = current->get_c();
+            copied++;
+            current= current->get_next();
+        }
+        while(true){
+            if(!stack.is_empty()){
+                current = stack.pop()->get_next();
+                TSeparator s = separators.pop();
+                if(current != nullptr){
+                    for (int j = 0; j < s.get_len(); ++j) {
+                        result[copied] = s.get_s()[j];
+                        copied++;
+                    }
+                    // есть следующий обьект, обрабатываем его
+                    break;
+                }else if(current == nullptr && !stack.is_empty()){
+                    // дошли до последнего слова(строки) и надо подниматься еще выше
+                    continue;
+                }else{
+                    break;
+                }
+            }else{
+                break;
+            }
+        }
+    }
+    return result;
 }

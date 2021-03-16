@@ -25,6 +25,7 @@ public:
     void set_down(TTextNode *down);
     char get_c() const;
     void set_c(char c);
+    TSeparator get_separator();
     NodeLevel get_level() const;
     void set_level(NodeLevel level);
     bool is_letter() const;

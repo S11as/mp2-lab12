@@ -9,6 +9,8 @@ int main() {
     TTextIterator i = node->begin();
     node->_delete(5, i);
     std::cout << *(node)<<std::endl;
+    TTextIterator b = node->begin();
+    std::cout<<b.get_str_len(17)<<std::endl;
 //    TTextIterator b = node->begin();
 //    b.reset_to(NodeLevel::PARAGRAPH);
 //    while(b.get()){

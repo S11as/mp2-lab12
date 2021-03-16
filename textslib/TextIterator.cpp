@@ -91,29 +91,25 @@ TTextNode *TTextIterator::get() {
     return this->node;
 }
 
-TTextIterator &TTextIterator::_delete(int count, TTextIterator i) {
-    TStack<TTextNode*> linking;
-    TTextIterator j = i;
-    if(i.get()->get_level() != NodeLevel::LETTER){
-
-    }else{
-        j.reset_to(NodeLevel::WORD);
-        // проверить не является ли i rootом
-        j.go_next();
-        if(&(*j.get())==&(*i.get())){
-            //prev нет
-        }else{
-            // prev есть
-            while(j.get()){
-                if(&(*j.get())==&(*i.get())){
-                    break;
-                }
-                j.go_next();
-            }
-            // j указывает на prev для i
-
+int TTextIterator::get_str_len(int count) {
+    int len = 0;
+    int counted = 0;
+    TStack<TSeparator> separators;
+    while(this->node && counted<count){
+        while(!this->node->is_letter()){
+            separators.push(this->node->get_separator());
+            this->go_next();
         }
-
+        while(!separators.is_empty()){
+            TSeparator s = separators.pop();
+            len += s.get_len();
+        }
+        while(this->node && this->node->is_letter()){
+            this->go_next();
+            counted++;
+            len++;
+        }
     }
-    return i;
+    return len;
 }
+

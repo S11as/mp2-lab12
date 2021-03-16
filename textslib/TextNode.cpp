@@ -48,31 +48,13 @@ TTextNode::TTextNode(char _c) {
 
 std::ostream &operator<<(std::ostream &ostream, const TTextNode &node) {
     TTextNode* current = new TTextNode(node);
-    std::string separator;
     TStack<TTextNode*>stack{};
-    TStack<std::string> separators;
+    TStack<TSeparator> separators;
     bool end_of_print = false;
     while(!end_of_print){
         while(!current->is_letter()){
             stack.push(current);
-            switch (current->get_level()){
-                case NodeLevel::LETTER:
-                    separator = "";
-                    break;
-                case NodeLevel::WORD:
-                    separator = " ";
-                    break;
-                case NodeLevel::STRING:
-                    separator = "\n";
-                    break;
-                case NodeLevel::PARAGRAPH:
-                    separator = "\\pa";
-                    break;
-                case NodeLevel::PAGE:
-                    separator = "\\pb";
-                    break;
-            }
-            separators.push(separator);
+            separators.push(current->get_separator());
             current = current->get_down();
         }
         // letter
@@ -83,7 +65,7 @@ std::ostream &operator<<(std::ostream &ostream, const TTextNode &node) {
         while(true){
             if(!stack.is_empty()){
                 current = stack.pop()->get_next();
-                std::string s = separators.pop();
+                TSeparator s = separators.pop();
                 if(current != nullptr){
                     ostream<<s;
                     // есть следующий обьект, обрабатываем его
@@ -158,4 +140,28 @@ bool TTextNode::operator!=(TTextNode &node) {
 
 bool TTextNode::has_down() const {
     return this->down == nullptr;
+}
+
+TSeparator TTextNode::get_separator() {
+    TSeparator s;
+    switch(this->level){
+        case NodeLevel::LETTER:
+            s.set_s("");
+            break;
+        case NodeLevel::WORD:
+            s.set_s(" ");
+            break;
+        case NodeLevel::STRING:
+            s.set_s("\n");
+            break;
+        case NodeLevel::PARAGRAPH:
+            s.set_s("\\pa");
+            break;
+        case NodeLevel::PAGE:
+            s.set_s("\\pb");
+            break;
+        case NodeLevel::TEXT:
+            break;
+    }
+    return s;
 }

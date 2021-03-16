@@ -22,7 +22,7 @@ public:
     TTextNode* get();
     TTextIterator& reset_to(NodeLevel level);
     TTextIterator& reset();
-    TTextIterator& _delete(int count, TTextIterator i);
+    int get_str_len(int count);
 };
 
 
