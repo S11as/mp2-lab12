@@ -5,22 +5,13 @@
 #include "TTextFactory.h"
 
 int main() {
-    char *s = "hello\nword\nwww dddddd\paqqqq";
-    TText *node = TTextFactory::create(s);
-    TTextIterator i = node->begin();
-    node->_delete(5, i);
-    std::cout << *(node)<<std::endl;
-    TTextIterator j = node->find(NodeLevel::WORD, "www");
-    char *ss = node->copy(12, j);
-    int len = strlen(ss);
-    for (int k = 0; k < len; ++k) {
-        std::cout<<ss[k];
+    char *s = "hello world\nit is rainy today\pabye world";
+    TText* text = TTextFactory::create(s);
+    char *sequence = "itis";
+    int len = strlen(sequence);
+    TTextIterator i = text->find(sequence);
+    for (int j = 0; j < len; ++j) {
+        i.go_next_char();
     }
-//    TTextIterator b = node->begin();
-//    b.reset_to(NodeLevel::PARAGRAPH);
-//    while(b.get()){
-//        std::cout<<static_cast<int>(b.get()->get_level())<<std::endl;
-//        b.go_next(NodeLevel::PARAGRAPH);
-//    }
     return 0;
 }

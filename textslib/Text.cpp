@@ -135,8 +135,8 @@ TText::iterator TText::_delete(int to_delete, TText::iterator i) {
         TTextNode *current = i.get();
         if (current->get_next() == nullptr) {
             // у буквы нет следующей
-            TTextIterator q = i;
-            q.go_next();
+            TTextIterator next_elem_to_delete = i;
+            next_elem_to_delete.go_next();
             int level = 0;
             // ресет на уровень выше (буква-слово и тд)
             while (level < 5) {
@@ -144,7 +144,6 @@ TText::iterator TText::_delete(int to_delete, TText::iterator i) {
                 i.reset_to(higher_level);
                 TTextNode *word = i.get();
                 if (current) {
-                    // работает только на букву
                     if (current->get_level() == NodeLevel::LETTER) deleted++;
                     deleting.push(current);
                     if (&(*(word->get_down())) == &(*current) && !current->has_next()) {
@@ -155,7 +154,7 @@ TText::iterator TText::_delete(int to_delete, TText::iterator i) {
 
                 if (!void_structure) {
                     // структура удалена не полностью
-                    i = q;
+                    i = next_elem_to_delete;
                     break;
                 } else {
                     // у структуры нету down, значит в нем все було удалено, надо перекинуть prev и удалить само слово
@@ -170,6 +169,7 @@ TText::iterator TText::_delete(int to_delete, TText::iterator i) {
                         } else {
                             prevs[higher_level_int]->set_next(word->get_next());
                         }
+                        i = next_elem_to_delete;
                         break;
                     } else {
                         // структура последняя
@@ -219,7 +219,7 @@ void TText::renew_prevs(TTextIterator &i, TTextNode **&prevs) {
         if (&(*j.get()) == &(*q.get())) {
             j.reset_to(static_cast<NodeLevel>(k + 1));
             prevs[k] = j.get();
-            //prev нет
+            //prev нет (точнее сказать предыдущий для этой структуры будет структура уровня выше)
         } else {
             // prev есть
             while (j.get()) {

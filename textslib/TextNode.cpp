@@ -6,6 +6,10 @@
 #include <iostream>
 #include "TextNode.h"
 
+TTextNode* TTextNode::first_free = nullptr;
+TList<TTextNode*> TTextNode::text_nodes;
+
+
 TTextNode *TTextNode::get_next() const {
     return next;
 }
@@ -164,4 +168,41 @@ TSeparator TTextNode::get_separator() {
             break;
     }
     return s;
+}
+
+void TTextNode::init_mem(int size) {
+    if(size<=0)
+        throw std::invalid_argument("size below 0");
+    auto* new_nodes = new TTextNode[size];
+    for (int i = 0; i < size; ++i) {
+        new_nodes[i-1].next = &(new_nodes[i]);
+    }
+    TTextNode::text_nodes.InsLast(new_nodes);
+    TTextNode::first_free = new_nodes;
+}
+
+void TTextNode::free_mem() {
+    TListIterator<TTextNode*> y = TTextNode::text_nodes.begin();
+    while(y!=TTextNode::text_nodes.end()){
+        delete[] *y;
+        y++;
+    }
+}
+
+void *TTextNode::operator new(size_t size) {
+    if(TTextNode::first_free == nullptr)
+        TTextNode::init_mem();
+    TTextNode* node = TTextNode::first_free;
+    TTextNode::first_free = TTextNode::first_free->next;
+    node->next = nullptr;
+    return node;
+}
+
+void TTextNode::operator delete(void *p) {
+    TTextNode* node = (TTextNode*)p;
+    node->next = TTextNode::first_free;
+    node->down = nullptr;
+    node->c = 0;
+    node->level = NodeLevel::LETTER;
+    TTextNode::first_free = node;
 }

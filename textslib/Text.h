@@ -28,7 +28,6 @@ public:
 public:
     static void renew_prevs(TTextIterator &i, TTextNode **&prevs);
     friend std::ostream &operator<<(std::ostream &ostream, const TText &text);
-
 };
 
 

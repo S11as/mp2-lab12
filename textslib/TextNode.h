@@ -7,14 +7,15 @@
 #include <fstream>
 #include "Stack.h"
 #include "Separator.h"
-
+#include "TList.h"
 enum class NodeLevel {LETTER=0, WORD=1, STRING=2, PARAGRAPH=3, PAGE=4, TEXT=5};
 
 class TTextNode {
 protected:
     TTextNode* next;
     TTextNode* down;
-
+    static TList<TTextNode*> text_nodes;
+    static TTextNode* first_free;
 protected:
     char c;
     NodeLevel level;
@@ -40,6 +41,11 @@ public:
     bool operator==(TTextNode& node);
     bool operator!=(TTextNode& node);
     friend std::ostream &operator<<(std::ostream &ostream, const TTextNode &node);
+
+    static void init_mem(int size= 100);
+    static void free_mem();
+    void* operator new(size_t size);
+    void operator delete(void* p);
 };
 
 
