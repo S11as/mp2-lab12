@@ -24,6 +24,16 @@ bool TSeparator::in_begin(const char *str, int start, int end) {
     return true;
 }
 
+bool TSeparator::in_begin(std::string str, int start, int end) {
+    for (int i = 0; i < this->len; ++i) {
+        if(start+i>=end)
+            return false;
+        if(str[start+i]!=this->s[i])
+            return false;
+    }
+    return true;
+}
+
 void TSeparator::set_s(char *s) {
     TSeparator::len=strlen(s);
     TSeparator::s = s;

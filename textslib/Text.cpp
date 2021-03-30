@@ -24,8 +24,8 @@ TText::iterator TText::begin() {
 
 TText::iterator TText::find(char c) {
     TTextIterator iter = this->begin();
-    while(iter.get()){
-        if(*(iter.get()) == c)
+    while (iter.get()) {
+        if (*(iter.get()) == c)
             break;
         iter.go_next_char();
     }
@@ -37,42 +37,42 @@ TText::iterator TText::find(char *s) {
     bool not_found = true;
     int str_index = 0;
     int found_length = strlen(s);
-    while(iter.get() && not_found){
-        if(*(iter.get()) == s[str_index]){
+    while (iter.get() && not_found) {
+        if (*(iter.get()) == s[str_index]) {
             TTextIterator iter2 = iter;
-            while(iter2.get()){
-                if(*(iter2.get()) == s[str_index]){
+            while (iter2.get()) {
+                if (*(iter2.get()) == s[str_index]) {
                     str_index++;
                     iter2.go_next_char();
-                    if(str_index == found_length){
+                    if (str_index == found_length) {
                         not_found = false;
                         break;
                     }
-                }else{
+                } else {
                     str_index = 0;
                     break;
                 }
             }
-        }else{
+        } else {
             str_index = 0;
             iter.go_next_char();
         }
     }
-    if(not_found){
+    if (not_found) {
         iter.reset();
     }
     return iter;
 }
 
 TText::iterator TText::find(NodeLevel level, char *s) {
-    if(level == NodeLevel::LETTER){
+    if (level == NodeLevel::LETTER) {
         return this->find(s[0]);
     }
-    TTextNode* node = TTextFactory::create_node(s, level);
+    TTextNode *node = TTextFactory::create_node(s, level);
     TTextIterator iter = this->begin();
     iter.reset_to(level);
-    while(iter.get()){
-        if(*(iter.get()) == *(node)){
+    while (iter.get()) {
+        if (*(iter.get()) == *(node)) {
             break;
         }
         iter.go_next(level);
@@ -81,34 +81,34 @@ TText::iterator TText::find(NodeLevel level, char *s) {
 }
 
 TText::~TText() {
-    TStack<TTextNode*> stack;
-    while(!this->root->is_letter()){
+    TStack<TTextNode *> stack;
+    while (!this->root->is_letter()) {
         stack.push(this->root);
         this->root = this->root->get_down();
     }
-    TTextNode* prev_letter= nullptr;
-    while(this->root != nullptr){
+    TTextNode *prev_letter = nullptr;
+    while (this->root != nullptr) {
         prev_letter = this->root;
         this->root = this->root->get_next();
         delete prev_letter;
     }
-    while(!stack.is_empty()){
-        TTextNode* prev_level = stack.pop();
-        TTextNode* prev_level_delete = prev_level;
-        if(prev_level->has_next()) {
+    while (!stack.is_empty()) {
+        TTextNode *prev_level = stack.pop();
+        TTextNode *prev_level_delete = prev_level;
+        if (prev_level->has_next()) {
             prev_level = prev_level->get_next();
             delete prev_level_delete;
             while (!prev_level->is_letter()) {
                 stack.push(prev_level);
                 prev_level = prev_level->get_down();
             }
-            prev_letter= nullptr;
-            while(prev_level != nullptr){
+            prev_letter = nullptr;
+            while (prev_level != nullptr) {
                 prev_letter = prev_level;
                 prev_level = prev_level->get_next();
                 delete prev_letter;
             }
-        }else{
+        } else {
             delete prev_level_delete;
         }
     }
@@ -116,9 +116,9 @@ TText::~TText() {
 }
 
 TText::iterator TText::insert(char *s, TText::iterator in) {
-    if(in.get()){
-        TTextNode* node = TTextFactory::create_node(s, in.get()->get_level());
-        TTextNode* next = in.get()->get_next();
+    if (in.get()) {
+        TTextNode *node = TTextFactory::create_node(s, in.get()->get_level());
+        TTextNode *next = in.get()->get_next();
         node->set_next(next);
         in.get()->set_next(node);
     }
@@ -235,68 +235,86 @@ void TText::renew_prevs(TTextIterator &i, TTextNode **&prevs) {
 }
 
 std::ostream &operator<<(std::ostream &ostream, const TText &text) {
-    return ostream<<*(text.root);
+    return ostream << *(text.root);
 }
 
 char *TText::copy(int count, TTextIterator i) {
-    char* result = new char[i.get_str_len(count)];
+    char *result = new char[i.get_str_len(count)];
     int copied = 0;
     int index = 0;
-    TStack<TTextNode*> stack;
+    TStack<TTextNode *> stack;
     TStack<TSeparator> separators;
-    TTextNode* current = i.get();
+    TTextNode *current = i.get();
     // тк i может указывать на произвольный уровень нужно все уровни над ним положить в стек
     // мы можем подниматься только наверх, а в стеке сверху лежит наименьший уровень
     // поэтому используем очередь чтобы потом правильно заполнить текст
-    TQueue<TTextNode*> queue;
+    TQueue<TTextNode *> queue;
     TTextIterator j = i;
     NodeLevel level = j.get()->get_level();
-    level = static_cast<NodeLevel>(static_cast<int>(level)+1);
-    while(level!=NodeLevel::TEXT){
+    level = static_cast<NodeLevel>(static_cast<int>(level) + 1);
+    while (level != NodeLevel::TEXT) {
         j.reset_to(level);
         queue.push(j.get());
-        level = static_cast<NodeLevel>(static_cast<int>(level)+1);
+        level = static_cast<NodeLevel>(static_cast<int>(level) + 1);
     }
-    while(!queue.is_empty()){
-        TTextNode* node = queue.pop();
+    while (!queue.is_empty()) {
+        TTextNode *node = queue.pop();
         stack.push(node);
         separators.push(node->get_separator());
     }
 
-    while(current && (copied < count)){
-        while(!current->is_letter()){
+    while (current && (copied < count)) {
+        while (!current->is_letter()) {
             stack.push(current);
             separators.push(current->get_separator());
             current = current->get_down();
         }
-        while((current != nullptr) && (copied < count)){
+        while ((current != nullptr) && (copied < count)) {
             result[index] = current->get_c();
             copied++;
             index++;
-            current= current->get_next();
+            current = current->get_next();
         }
-        while(true){
-            if(!stack.is_empty()){
+        while (true) {
+            if (!stack.is_empty()) {
                 current = stack.pop()->get_next();
                 TSeparator s = separators.pop();
-                if(current != nullptr){
+                if (current != nullptr) {
                     for (int j = 0; j < s.get_len(); ++j) {
                         result[index] = s.get_s()[j];
                         index++;
                     }
                     // есть следующий обьект, обрабатываем его
                     break;
-                }else if(current == nullptr && !stack.is_empty()){
+                } else if (current == nullptr && !stack.is_empty()) {
                     // дошли до последнего слова(строки) и надо подниматься еще выше
                     continue;
-                }else{
+                } else {
                     break;
                 }
-            }else{
+            } else {
                 break;
             }
         }
     }
     result[index] = '\0';
     return result;
+}
+
+bool TText::save(const string &fn) {
+    ofstream file(fn);
+    if (file.is_open()) {
+        file << *this;
+        file.close();
+        return true;
+    }
+    return false;
+}
+
+bool TText::load(const string &fn) {
+    std::ifstream file(fn);
+    std::string str((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+    this->root = TTextFactory::create_node(str, NodeLevel::PAGE);
+    return true;
 }

@@ -15,6 +15,7 @@ protected:
 public:
     explicit TSeparator(char*s= nullptr);
     bool in_begin(const char*str, int start, int end);
+    bool in_begin(std::string str, int start, int end);
     void set_s(char *s);
     char* get_s();
     int get_len();

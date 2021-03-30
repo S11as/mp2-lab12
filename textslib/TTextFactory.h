@@ -11,6 +11,7 @@
 class TTextFactory {
 public:
     static TTextNode* create_node(char* s, NodeLevel level, int start=0, int end=0);
+    static TTextNode* create_node(string s, NodeLevel level, int start=0, int end=0);
     static TText* create(char* s);
 };
 

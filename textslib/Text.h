@@ -25,9 +25,11 @@ public:
     iterator insert(char* s, iterator in);
     iterator _delete(int to_delete, iterator i);
     char* copy(int count, TTextIterator i);
-public:
+    bool save(const string& fn);
+    bool load(const string& fn);
     static void renew_prevs(TTextIterator &i, TTextNode **&prevs);
     friend std::ostream &operator<<(std::ostream &ostream, const TText &text);
+
 };
 
 
